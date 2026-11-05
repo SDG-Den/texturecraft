@@ -1,0 +1,8 @@
+{
+  "url": "https://github.com/SDG-Den/texturecraft/releases/download/binary-testing/texturecraft-0.2.0-linux-x86_64.tar.gz",
+  "hash": "sha256-epcDM3AYGl9Z/7KuUDnhH0ek+S1oBz85GQKPva5Npsg=",
+  "version": "0.2.0",
+  "tag": "binary-testing",
+  "system": "x86_64-linux",
+  "repo": "SDG-Den/texturecraft"
+}
