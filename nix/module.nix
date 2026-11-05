@@ -16,6 +16,10 @@
   # The package of this flake; `flake.nix` passes it through `_module.args`, so importing the
   # module directly needs no overlay.
   texturecraftPackage ? pkgs.texturecraft,
+  # `flake.nix` passes the source build and the pre-built release binary separately. Importing the
+  # module directly falls back to `texturecraftPackage` and no binary.
+  texturecraftSourcePackage ? texturecraftPackage,
+  texturecraftBinaryPackage ? null,
   ...
 }:
 
@@ -53,10 +57,24 @@ in
   options.programs.texturecraft = {
     enable = mkEnableOption "TextureCraft";
 
+    useBinary = mkOption {
+      type = types.bool;
+      default = true;
+      description = ''
+        Install the pre-built Linux binary from `binary-url.json` when this system has one,
+        instead of building from source. Falls back to the source build when the file is missing
+        or the system is unsupported.
+      '';
+    };
+
     package = mkOption {
       type = types.package;
-      default = texturecraftPackage;
-      defaultText = lib.literalMD "the `texturecraft` package of this flake";
+      default =
+        if cfg.useBinary && texturecraftBinaryPackage != null then
+          texturecraftBinaryPackage
+        else
+          texturecraftSourcePackage;
+      defaultText = lib.literalMD "the pre-built binary from `binary-url.json`, or the source build";
       description = "The TextureCraft package to install.";
     };
 
