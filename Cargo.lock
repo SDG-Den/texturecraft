@@ -724,12 +724,12 @@ dependencies = [
 [[package]]
 name = "craft-fonts-build"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=f8f8829cc7be65d466d687dae381d1ca60e31242#f8f8829cc7be65d466d687dae381d1ca60e31242"
+source = "git+https://github.com/SDG-Den/craft-libs?rev=41276fb90a13865d39c288c7ef85d22cfebc52c9#41276fb90a13865d39c288c7ef85d22cfebc52c9"
 
 [[package]]
 name = "craft-i18n"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=f8f8829cc7be65d466d687dae381d1ca60e31242#f8f8829cc7be65d466d687dae381d1ca60e31242"
+source = "git+https://github.com/SDG-Den/craft-libs?rev=41276fb90a13865d39c288c7ef85d22cfebc52c9#41276fb90a13865d39c288c7ef85d22cfebc52c9"
 dependencies = [
  "fixed_decimal",
  "icu_decimal",
@@ -752,7 +752,7 @@ dependencies = [
 [[package]]
 name = "craft-ui"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=f8f8829cc7be65d466d687dae381d1ca60e31242#f8f8829cc7be65d466d687dae381d1ca60e31242"
+source = "git+https://github.com/SDG-Den/craft-libs?rev=41276fb90a13865d39c288c7ef85d22cfebc52c9#41276fb90a13865d39c288c7ef85d22cfebc52c9"
 dependencies = [
  "craft-fonts-build",
  "craft-i18n",
@@ -764,6 +764,7 @@ dependencies = [
  "objc2-app-kit 0.3.2",
  "objc2-foundation 0.3.2",
  "serde",
+ "serde_json",
  "skrifa 0.44.0",
  "wasm-bindgen",
  "wasm-bindgen-futures",
@@ -773,7 +774,7 @@ dependencies = [
 [[package]]
 name = "craft-window"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=f8f8829cc7be65d466d687dae381d1ca60e31242#f8f8829cc7be65d466d687dae381d1ca60e31242"
+source = "git+https://github.com/SDG-Den/craft-libs?rev=41276fb90a13865d39c288c7ef85d22cfebc52c9#41276fb90a13865d39c288c7ef85d22cfebc52c9"
 dependencies = [
  "egui",
  "objc2 0.6.5",

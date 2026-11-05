@@ -117,6 +117,12 @@ pub struct TextureCraftApp {
     next_autosave: f64,
     /// The brightness and accent the style was last built for.
     styled: Option<(theme::Brightness, theme::Accent)>,
+    /// The shared suite palette, when one is installed (desktop only).
+    #[cfg(not(target_arch = "wasm32"))]
+    palette: Option<craft_ui::theme::Palette>,
+    /// Watches the palette file for changes (desktop only).
+    #[cfg(not(target_arch = "wasm32"))]
+    palette_watcher: Option<craft_ui::theme::PaletteWatcher>,
     /// Whether the window had focus last frame.
     focused: bool,
 }
@@ -135,6 +141,8 @@ impl TextureCraftApp {
             ui
         });
         let next_autosave = ui.prefs.autosave_minutes as f64 * 60.0;
+        #[cfg(not(target_arch = "wasm32"))]
+        let palette = craft_ui::theme::Palette::load().map(|loaded| loaded.palette);
         let mut app = TextureCraftApp {
             session,
             ui,
@@ -162,6 +170,10 @@ impl TextureCraftApp {
             last_time: 0.0,
             next_autosave,
             styled: None,
+            #[cfg(not(target_arch = "wasm32"))]
+            palette,
+            #[cfg(not(target_arch = "wasm32"))]
+            palette_watcher: Some(craft_ui::theme::PaletteWatcher::from_env()),
             focused: true,
         };
         app.ui.rename = None;
@@ -180,6 +192,36 @@ impl TextureCraftApp {
             app.session.log.extend(skipped.into_iter().map(|w| format!("Project template skipped: {w}")));
         }
         app
+    }
+
+    /// The shared suite palette, when one is installed (desktop only; the web build keeps the
+    /// built-in theme).
+    fn suite_palette(&self) -> Option<&craft_ui::theme::Palette> {
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            self.palette.as_ref()
+        }
+        #[cfg(target_arch = "wasm32")]
+        {
+            None
+        }
+    }
+
+    /// Re-read the palette file while the window is visible (a hidden window must not wake every
+    /// 400 ms). A change rebuilds the style at the next check.
+    fn poll_palette(&mut self, ctx: &egui::Context) {
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            let visible = ctx.input(|input| input.viewport().visible().unwrap_or(true));
+            if visible {
+                if let Some(loaded) = self.palette_watcher.as_mut().and_then(|watcher| watcher.poll(ctx)) {
+                    self.palette = Some(loaded.palette);
+                    self.styled = None;
+                }
+            }
+        }
+        #[cfg(target_arch = "wasm32")]
+        let _ = ctx;
     }
 
     /// Run an engine command, reporting errors as toasts. Returns the result on success.
@@ -463,9 +505,10 @@ impl eframe::App for TextureCraftApp {
             self.fps = self.fps * 0.9 + (1.0 / dt) * 0.1;
         }
         self.last_time = now;
+        self.poll_palette(ctx);
         let style = (self.ui.prefs.brightness, self.ui.prefs.accent);
         if self.styled != Some(style) {
-            theme::apply(ctx, style.0, style.1);
+            theme::apply_palette(ctx, style.0, style.1, self.suite_palette());
             self.styled = Some(style);
         }
         control::poll(self, ctx);
